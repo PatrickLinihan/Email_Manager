@@ -37,7 +37,7 @@ my_password = input("%s password: " %(my_email))
 
 while managing:
     logout = False
-    gmail_option = input("Options include:\n\t\tsend email \n\t\tdelete email \n\t\topen email \n\t\tWhat would you like to do?: ")
+    gmail_option = input("What would you like to do?\n\toptions include:\n\tsend email\n\tdelete email: ")
 
     #---------------------------------------------------------------------------------------------------------------------------------------------------------#
     if gmail_option == "send email":
@@ -65,6 +65,8 @@ while managing:
                 for mbox in data:
                     flags, separator, name = parse_mailbox(bytes.decode(mbox))
                     #fmt = '{0}    : [Flags = {1}; Separator = {2}'
+                    if '/' in name:
+                        continue
                     print(name)
 
             imap.list()
@@ -76,7 +78,7 @@ while managing:
             imap.select(inbox)
 
             # searching for emails from this emailer
-            emails_to_delete = input("\nWhat emails would you like to delete?\n\t\tUse format -> 'FROM <email@emailaddress.com': ")
+            emails_to_delete = input("\nWhat emails would you like to delete?\n\tUse format -> 'FROM <email@emailaddress.com': ")
 
             # convert messages to a list of email IDs
             status, messages = imap.search(None, emails_to_delete)
