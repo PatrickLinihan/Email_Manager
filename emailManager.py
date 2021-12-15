@@ -1,16 +1,18 @@
 import smtplib, ssl
 import imaplib
-import email
+# import email
+# from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from email.header import decode_header
 import re
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+import os
 
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 valid = True
 managing = True
 port = 465
+my_password = os.environ.get('EMAIL_PASSWORD')
     
 # checking if email is valid
 def valid_email(email):
@@ -30,20 +32,21 @@ def parse_mailbox(data):
 # write and send email
 def sendEmail(my_email, my_password):
     receiver_email = input("Who do you want to send an email to?\n\t\tUse format -> '<email@emailaddress.com>': ")
-    subject = input("What is the subject of the message?: ")
+    subject = input("What is the subject of the email?: ")
     message = MIMEMultipart()
     message["From"] = my_email
     message["To"] = receiver_email
     message["Subject"] = subject
     text_body = input("Type message here: ")
-    message.attach(MIMEText(text_body, "plain"))
 
-    # create a secure ssl context
+    part1 = MIMEText(text_body, "plain")
+    message.attach(part1)
+
     context = ssl.create_default_context()
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
+    with smtplib.SMTP_SSL("smtp.gmail.com", port, context = context) as server:
         server.login(my_email, my_password)
-        server.sendmail(my_email, receiver_email, message)
+        server.sendmail(my_email, receiver_email, message.as_string())
+
 
 # delete all emails from certain email address
 def deleteMail(my_email, my_password):
@@ -115,7 +118,7 @@ while valid:
     my_email = input("Enter your email address: ")
     valid = valid_email(my_email)
 
-my_password = input("%s password: " %(my_email))
+#my_password = input("%s's password: " %(my_email))
 
 # main loop
 while managing:
